@@ -26,12 +26,12 @@ class Assistant:
         if not text:
             return "I didn't catch that. Please say it again.", False
 
-        if re.search(r"\\b(stop listening|shut down jarvis|exit jarvis|quit jarvis|goodbye)\\b", text):
+        if re.search(r"\b(stop listening|shut down jarvis|exit jarvis|quit jarvis|goodbye)\b", text):
             return "Understood. Going offline. Goodbye.", True
 
-        if re.search(r"\\b(what time is it|tell me the time|current time)\\b", text) or text == "time":
+        if re.search(r"\b(what time is it|tell me the time|current time)\b", text) or text == "time":
             return f"It is {dt.datetime.now().strftime('%I:%M %p')}.", False
-        if re.search(r"\\b(what is the date|what's the date|what day is it|today's date)\\b", text) or text == "date":
+        if re.search(r"\b(what is the date|what's the date|what day is it|today's date)\b", text) or text == "date":
             return f"Today is {dt.datetime.now().strftime('%A, %B %d, %Y')}.", False
 
         apps = {
