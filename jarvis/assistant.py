@@ -1,10 +1,14 @@
 """Command routing and optional AI conversation."""
 from __future__ import annotations
+
 import datetime as dt
+import re
 import subprocess
 import webbrowser
 from urllib.parse import quote_plus
+
 from .config import settings
+
 
 class Assistant:
     def __init__(self) -> None:
@@ -21,11 +25,13 @@ class Assistant:
         text = command.lower().strip()
         if not text:
             return "I didn't catch that. Please say it again.", False
-        if any(x in text for x in ("stop listening", "shut down jarvis", "exit jarvis", "goodbye")):
+
+        if re.search(r"\\b(stop listening|shut down jarvis|exit jarvis|quit jarvis|goodbye)\\b", text):
             return "Understood. Going offline. Goodbye.", True
-        if "time" in text:
+
+        if re.search(r"\\b(what time is it|tell me the time|current time)\\b", text) or text == "time":
             return f"It is {dt.datetime.now().strftime('%I:%M %p')}.", False
-        if "date" in text or "day is it" in text:
+        if re.search(r"\\b(what is the date|what's the date|what day is it|today's date)\\b", text) or text == "date":
             return f"Today is {dt.datetime.now().strftime('%A, %B %d, %Y')}.", False
 
         apps = {
@@ -62,17 +68,31 @@ class Assistant:
                 response = self.client.chat.completions.create(
                     model=settings.openai_model,
                     messages=[
-                        {"role": "system", "content": "You are JARVIS, a concise, calm, helpful Windows desktop assistant. Never claim to have performed an action unless a tool actually did it. Do not provide destructive shell commands."},
+                        {
+                            "role": "system",
+                            "content": (
+                                "You are JARVIS, a concise, calm, polished Windows desktop assistant. "
+                                "Speak naturally and warmly. Remember the conversation context provided. "
+                                "Never claim to have performed an action unless a tool actually did it. "
+                                "Do not provide destructive shell commands or pretend you can control "
+                                "the computer beyond the explicitly available actions."
+                            ),
+                        },
                         *self.history,
                     ],
                     temperature=0.6,
-                    max_tokens=250,
+                    max_tokens=300,
                 )
                 answer = response.choices[0].message.content or "I don't have an answer right now."
                 self.history.append({"role": "assistant", "content": answer})
+                self.history = self.history[-12:]
                 return answer, False
             except Exception as exc:
                 print(f"[AI] {exc}")
                 return "I couldn't reach the AI service. Local commands are still available.", False
 
-        return "I can open apps, tell the time and date, and search the web. Add an API key in .env for AI conversation.", False
+        return (
+            "I can open apps, tell the time and date, and search the web. "
+            "Add an API key in your .env file to enable natural AI conversation.",
+            False,
+        )
