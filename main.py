@@ -9,13 +9,13 @@ from jarvis.speech import SpeechEngine
 
 def contains_wake_word(phrase: str) -> bool:
     """Match Jarvis as a separate word, not as part of another word."""
-    return re.search(rf"\\b{re.escape(settings.wake_word)}\\b", phrase, re.IGNORECASE) is not None
+    return re.search(rf"\b{re.escape(settings.wake_word)}\b", phrase, re.IGNORECASE) is not None
 
 
 def remove_wake_word(phrase: str) -> str:
     """Return anything spoken after the wake word, if present."""
     return re.sub(
-        rf"\\b{re.escape(settings.wake_word)}\\b[,:;.!]?\\s*",
+        rf"\b{re.escape(settings.wake_word)}\b[,:;.!]?\s*",
         "",
         phrase,
         count=1,
