@@ -4,7 +4,7 @@ import sys
 
 from jarvis.assistant import Assistant
 from jarvis.config import settings
-from jarvis.speech import SpeechEngine
+from jarvis.speech import SpeechEngine, available_voices
 
 
 def contains_wake_word(phrase: str) -> bool:
@@ -24,6 +24,21 @@ def remove_wake_word(phrase: str) -> str:
 
 
 def main() -> None:
+    if "--list-voices" in sys.argv:
+        try:
+            voices = available_voices()
+            if not voices:
+                print("No installed speech voices were detected.")
+            else:
+                print("Installed Windows speech voices:")
+                for name, voice_id in voices:
+                    print(f"- {name} | ID: {voice_id}")
+                print("\\nSet VOICE_NAME in your .env file to select one.")
+        except Exception as exc:
+            print(f"Could not list speech voices: {exc}")
+            sys.exit(1)
+        return
+
     print("=" * 54)
     print(" PROJECT JARVIS | Windows voice assistant")
     print(f' Wake word: "{settings.wake_word.title()}"')
@@ -46,7 +61,6 @@ def main() -> None:
             if not contains_wake_word(heard):
                 continue
 
-            # Support both "Jarvis" followed by a command and "Jarvis, open Notepad".
             command = remove_wake_word(heard)
             if not command:
                 speech.speak("Yes? I'm listening.")
@@ -64,15 +78,13 @@ def main() -> None:
                 if should_exit:
                     return
 
-                # Keep the conversation open; the user can ask follow-up questions
-                # without repeating the wake word.
                 command = speech.listen(timeout=8, phrase_time_limit=12)
                 if not command:
                     speech.speak("I'll go quiet for now. Say Jarvis when you need me.")
                     break
 
     except KeyboardInterrupt:
-        print("\n[JARVIS] Stopped by keyboard.")
+        print("\\n[JARVIS] Stopped by keyboard.")
     except OSError as exc:
         print(f"[Setup error] {exc}")
         print("Check microphone connection and Windows desktop microphone permissions.")
