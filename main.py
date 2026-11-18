@@ -33,7 +33,7 @@ def main() -> None:
                 print("Installed Windows speech voices:")
                 for name, voice_id in voices:
                     print(f"- {name} | ID: {voice_id}")
-                print("\\nSet VOICE_NAME in your .env file to select one.")
+                print("\nSet VOICE_NAME in your .env file to select one.")
         except Exception as exc:
             print(f"Could not list speech voices: {exc}")
             sys.exit(1)
@@ -84,7 +84,7 @@ def main() -> None:
                     break
 
     except KeyboardInterrupt:
-        print("\\n[JARVIS] Stopped by keyboard.")
+        print("\n[JARVIS] Stopped by keyboard.")
     except OSError as exc:
         print(f"[Setup error] {exc}")
         print("Check microphone connection and Windows desktop microphone permissions.")
