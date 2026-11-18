@@ -1,0 +1,23 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function participant() { return signedIn() && request.auth.uid in ['francis', 'angela']; }
+    match /messages/{messageId} {
+      allow read: if participant();
+      allow create: if participant() && request.resource.data.keys().hasOnly(['text','sender','createdAt']) && request.resource.data.sender == request.auth.uid && request.resource.data.text is string && request.resource.data.text.size() > 0 && request.resource.data.text.size() <= 3000;
+      allow update, delete: if false;
+    }
+    match /checkins/{checkinId} {
+      allow read: if participant();
+      allow create: if participant() && request.resource.data.keys().hasOnly(['feeling','note','sender','createdAt']) && request.resource.data.sender == request.auth.uid && request.resource.data.feeling is string && request.resource.data.feeling.size() <= 100 && request.resource.data.note is string && request.resource.data.note.size() <= 1000;
+      allow update, delete: if false;
+    }
+    match /journal/{entryId} {
+      allow create: if participant() && request.resource.data.keys().hasOnly(['text','sender','createdAt']) && request.resource.data.sender == request.auth.uid && request.resource.data.text is string && request.resource.data.text.size() > 0 && request.resource.data.text.size() <= 5000;
+      allow read: if participant() && resource.data.sender == request.auth.uid;
+      allow update, delete: if false;
+    }
+    match /{document=**} { allow read, write: if false; }
+  }
+}

@@ -1,10 +1,8 @@
+node_modules
+.next
+out
 .env
-.venv/
-venv/
-__pycache__/
-*.py[cod]
-.pytest_cache/
-.vscode/
-.idea/
-models/
+.env.local
+.env.*.local
+.vercel
 .DS_Store
