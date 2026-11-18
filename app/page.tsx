@@ -74,14 +74,11 @@ export default function Home() {
 
   useEffect(() => {
     if (!user) return;
-    const q = query(
-      collection(db, "journal"),
-      where("sender", "==", user.uid),
-      orderBy("createdAt", "desc"),
-      limit(30),
-    );
+    const q = query(collection(db, "journal"), where("sender", "==", user.uid), limit(100));
     return onSnapshot(q, (snapshot) => {
-      setJournalEntries(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as JournalEntry)));
+      const entries = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as JournalEntry));
+      entries.sort((a, b) => (b.createdAt?.toDate().getTime() ?? 0) - (a.createdAt?.toDate().getTime() ?? 0));
+      setJournalEntries(entries.slice(0, 30));
     }, () => setError("Your private thoughts could not be loaded. Please check your connection."));
   }, [user]);
 
