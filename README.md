@@ -3,10 +3,12 @@
 A Windows-first, voice-controlled desktop assistant. The wake word is **Jarvis** (not "Hey Jarvis").
 
 ## Included in this starter
-- Continuous wake-word listening for "Jarvis".
+- Wake-word listening for "Jarvis".
 - Spoken replies using Windows text-to-speech.
+- A short conversational session: after waking JARVIS, ask follow-up questions without repeating the wake word. Say "go to sleep" to end the session.
+- You can say a command in one phrase, such as "Jarvis, open Notepad".
 - Allowlisted local commands: open Notepad, Calculator, File Explorer, Task Manager, browser, and ChatGPT; tell the time/date; search the web.
-- Optional AI conversation through your own OpenAI API key.
+- Optional AI conversation through your own OpenAI API key, with a short rolling conversation history.
 - Optional offline speech recognition using a separately downloaded Vosk model.
 
 This is a starter foundation, not a fully autonomous system. It does not place phone calls or execute arbitrary shell commands.
@@ -30,19 +32,18 @@ If PyAudio installation fails on Windows, try:
     pipwin install pyaudio
 
 ## Optional AI setup
-Copy .env.example to .env and add your own OPENAI_API_KEY. Never commit .env or publish API keys. The .gitignore excludes it. AI conversation requires internet and API access.
+Copy .env.example to .env and add your own OPENAI_API_KEY. Never commit .env or publish API keys. The .gitignore excludes it. AI conversation requires internet and API access, and API usage may incur charges.
 
 ## Run
     python main.py
 
-Say "Jarvis", wait for "Yes? I'm listening", then say a command:
-- "Open Notepad"
-- "Open Calculator"
-- "Open File Explorer"
-- "Open ChatGPT"
-- "What time is it?"
+Say "Jarvis", wait for "Yes? I'm listening", then speak. You can also say the wake word and command together:
+- "Jarvis, open Notepad"
+- "Jarvis, what time is it?"
+- "Open Calculator" (as a follow-up during the active conversation)
 - "Search for Python tutorials"
-- "Stop listening"
+- "Go to sleep" to end the active conversation
+- "Stop listening" to close JARVIS
 
 You can also double-click run_jarvis.bat after installation. Press Ctrl+C to quit.
 
@@ -52,14 +53,14 @@ You can also double-click run_jarvis.bat after installation. Press Ctrl+C to qui
 3. Install Vosk: pip install vosk
 4. Set VOSK_MODEL_PATH=models/vosk-model-small-en-us-0.15 in .env and restart.
 
-When configured, Vosk is used for local transcription. Otherwise speech recognition uses Google's online service. Note that this first version's wake-word detection is speech-recognition based, not a dedicated low-power hotword engine.
+When configured, Vosk is used for local transcription. Otherwise speech recognition uses Google's online service. Note that this version's wake-word detection is speech-recognition based, not a dedicated low-power hotword engine.
 
 ## Safety and privacy
 The microphone is actively used while JARVIS is running. Google recognition sends audio to Google's service; Vosk can transcribe locally. Optional AI sends recognized text to the configured OpenAI API. Local app commands are explicitly allowlisted. Startup-on-boot, phone calls, and consequential system controls are not enabled in this starter.
 
 ## Roadmap
 1. Dedicated low-latency wake-word engine.
-2. Polished Windows interface and optional startup integration.
+2. Better Windows voice selection and a polished desktop interface.
 3. More Windows controls with confirmation for consequential actions.
 4. Improved offline speech and local AI.
 5. Permission-based phone/contact integration where supported.
